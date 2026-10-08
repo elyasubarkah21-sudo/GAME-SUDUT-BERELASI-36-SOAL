@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Sudut Berelasi - Game Edukasi Offline</title>
+    <style>
+        /* Modern Offline CSS Tokens & Base Reset */
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: rgba(30, 41, 59, 0.85);
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --emerald: #10b981;
+            --rose: #f43f5e;
+            --amber: #f59e0b;
+            --purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            line-height: 1.5;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+        }
+
+        /* Layout Container */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header Navigation */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+        }
+
+        .header-content {
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #a5b4fc, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #1e293b;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            color: white;
+            background: #1e293b;
+        }
+
+        .btn:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-indigo { background: #4f46e5; border-color: rgba(165, 180, 252, 0.3); }
+        .btn-purple { background: #9333ea; border-color: rgba(216, 180, 254, 0.3); }
+        .btn-slate { background: #334155; border-color: #475569; }
+
+        /* Icon SVGs */
+        .icon {
+            width: 1.125rem;
+            height: 1.125rem;
+            fill: currentColor;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            margin: 1.5rem 0 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .filter-btn {
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #818cf8;
+        }
+
+        /* Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 5fr 7fr;
+            }
+        }
+
+        /* Question Grid Selector */
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .grid-num-btn {
+            height: 2.75rem;
+            border-radius: 0.625rem;
+            font-weight: 700;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .grid-num-btn:hover {
+            border-color: #6366f1;
+            color: white;
+        }
+
+        .grid-num-btn.correct {
+            background: #059669;
+            border-color: #34d399;
+            color: white;
+        }
+
+        .grid-num-btn.incorrect {
+            background: #e11d48;
+            border-color: #fb7185;
+            color: white;
+        }
+
+        .grid-num-btn.active {
+            outline: 2px solid #818cf8;
+            outline-offset: 2px;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Question Card */
+        .question-box {
+            padding: 2rem 1rem;
+            background: #020617;
+            border-radius: 0.75rem;
+            border: 1px solid #1e293b;
+            text-align: center;
+            margin: 1.25rem 0;
+        }
+
+        .question-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #f8fafc;
+            letter-spacing: 0.025em;
+        }
+
+        /* Options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .option-btn {
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #334155;
+            border-color: #6366f1;
+        }
+
+        .option-btn.opt-correct {
+            background: rgba(6, 78, 59, 0.9);
+            border-color: #10b981;
+            color: #a7f3d0;
+        }
+
+        .option-btn.opt-wrong {
+            background: rgba(136, 19, 55, 0.9);
+            border-color: #f43f5e;
+            color: #fecdd3;
+        }
+
+        .option-badge {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.375rem;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #a5b4fc;
+            margin-right: 0.75rem;
+        }
+
+        /* Explanation Box */
+        .explanation-box {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background: rgba(30, 27, 75, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            font-size: 0.875rem;
+            color: #e0e7ff;
+        }
+
+        /* Modal Overlays */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.hidden {
+            display: none !important;
+        }
+
+        .modal-body {
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        /* Interactive Emoji Cards */
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .emoji-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .emoji-card {
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            border: 1px solid #334155;
+            background: #1e293b;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .emoji-card:hover {
+            transform: scale(1.05);
+            border-color: #a855f7;
+        }
+
+        .emoji-card.selected {
+            border-color: #c084fc;
+            background: rgba(168, 85, 247, 0.25);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Star Rating */
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1.75rem;
+            cursor: pointer;
+            margin: 0.5rem 0;
+        }
+
+        .star-item {
+            color: #475569;
+            transition: color 0.15s, transform 0.15s;
+        }
+
+        .star-item:hover {
+            transform: scale(1.2);
+        }
+
+        .star-item.active {
+            color: #f59e0b;
+        }
+
+        /* Utilities */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .font-bold { font-weight: 700; }
+        .text-muted { color: var(--text-muted); }
+        .text-amber { color: var(--amber); }
+        .text-emerald { color: var(--emerald); }
+        .w-full { width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div>
+        <!-- Top Navigation Bar -->
+        <header>
+            <div class="container header-content">
+                <div class="brand-logo">
+                    <div class="logo-icon">
+                        <!-- Compass SVG -->
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5l-3.5-1 1-3.5 4.5-2-2 6.5z"/></svg>
+                    </div>
+                    <div>
+                        <div class="brand-title">Sudut Berelasi</div>
+                        <div class="brand-sub">Masteri Trigonometri (100% Offline)</div>
+                    </div>
+                </div>
+
+                <!-- Nav Stats & Buttons -->
+                <div class="nav-actions">
+                    <div class="stat-badge">
+                        <span class="text-amber">★</span>
+                        <span class="text-muted">Skor:</span>
+                        <span id="scoreText" class="font-bold text-amber">0</span>
+                    </div>
+
+                    <div class="stat-badge">
+                        <span class="text-muted">Progres:</span>
+                        <span id="progressText" class="font-bold" style="color: #818cf8;">0 / 36</span>
+                    </div>
+
+                    <button id="cheatSheetBtn" class="btn btn-indigo" title="Rangkuman Rumus">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+                        <span>Rumus</span>
+                    </button>
+
+                    <button id="reflectionBtn" class="btn btn-purple" title="Refleksi Diri">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 21l3.54-1.22C9.28 20.48 10.59 21 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-1.19 0-2.33-.37-3.29-1.02l-.24-.16-2.1.72.72-2.03-.17-.26A6.953 6.953 0 0 1 5 12c0-3.86 3.14-7 7-7s7 3.14 7 7-3.14 7-7 7z"/></svg>
+                        <span>Refleksi</span>
+                    </button>
+
+                    <button id="soundBtn" class="btn btn-slate" title="Efek Suara">
+                        <span id="soundStatusText">🔊</span>
+                    </button>
+
+                    <button id="resetBtn" class="btn btn-slate" title="Ulang">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container" style="padding-top: 1.5rem; padding-bottom: 2rem;">
+            
+            <!-- Category Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">Semua (36)</button>
+                    <button class="filter-btn" data-filter="formula">Bentuk Rumus (α)</button>
+                    <button class="filter-btn" data-filter="value">Nilai Sudut (Eksak)</button>
+                    <button class="filter-btn" data-filter="unanswered">Belum Dijawab</button>
+                </div>
+                
+                <div class="text-xs text-muted flex gap-2">
+                    <span>⬜ Belum</span>
+                    <span style="color: #34d399;">🟩 Benar</span>
+                    <span style="color: #fb7185;">🟥 Salah</span>
+                </div>
+            </div>
+
+            <div class="main-grid">
+                
+                <!-- Left Column: Question Grid Selector -->
+                <div>
+                    <div class="glass-panel" style="padding: 1.25rem;">
+                        <div class="flex items-center justify-between">
+                            <h2 class="font-bold text-sm" style="color: #cbd5e1;">Pilih Nomor Soal</h2>
+                            <span class="text-xs" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; padding: 0.25rem 0.5rem; border-radius: 0.375rem;">
+                                36 Soal Tersedia
+                            </span>
+                        </div>
+
+                        <!-- 36 Question Grid -->
+                        <div id="questionGrid" class="question-grid">
+                            <!-- Rendered by JS -->
+                        </div>
+
+                        <!-- Accuracy Summary -->
+                        <div style="margin-top: 1.25rem; padding: 0.75rem; background: #020617; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #94a3b8;">
+                            <div>Akurasi: <strong id="accuracyText" style="color: white;">0%</strong></div>
+                            <div style="width: 100px; height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden;">
+                                <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(to right, #6366f1, #34d399); transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Active Question Workspace -->
+                <div>
+                    <div class="glass-panel" style="padding: 1.5rem; min-height: 420px; display: flex; flex-direction: column; justify-content: space-between;">
+                        
+                        <div>
+                            <!-- Header Info -->
+                            <div class="flex items-center justify-between" style="border-bottom: 1px solid #1e293b; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                                <div class="flex gap-2 items-center">
+                                    <span id="currentQuestionNum" class="text-xs font-bold" style="background: rgba(99,102,241,0.25); color: #a5b4fc; padding: 0.25rem 0.625rem; border-radius: 0.375rem;">
+                                        Soal #1
+                                    </span>
+                                    <span id="currentCategory" class="text-xs text-muted" style="background: #1e293b; padding: 0.25rem 0.5rem; border-radius: 0.375rem;">
+                                        Kuadran I
+                                    </span>
+                                </div>
+                                <button id="hintBtn" class="btn btn-slate" style="font-size: 0.75rem; padding: 0.25rem 0.625rem; color: #fcd34d;">
+                                    💡 Petunjuk
+                                </button>
+                            </div>
+
+                            <!-- Main Question Box -->
+                            <div class="question-box">
+                                <div class="text-xs text-muted" style="margin-bottom: 0.5rem;">Sederhanakan / Tentukan nilai dari:</div>
+                                <div id="questionText" class="question-title">
+                                    sin (90° + α) = ...
+                                </div>
+                            </div>
+
+                            <!-- Multiple Choice Options -->
+                            <div id="optionsContainer" class="options-grid">
+                                <!-- Rendered by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Explanation Panel -->
+                        <div id="explanationPanel" class="explanation-box hidden">
+                            <div class="font-bold text-xs" style="color: #a5b4fc; margin-bottom: 0.25rem;">ℹ️ Pembahasan Soal:</div>
+                            <p id="explanationText" style="line-height: 1.5; color: #cbd5e1;">
+                                Penjelasan...
+                            </p>
+                        </div>
+
+                        <!-- Question Navigation Bar -->
+                        <div class="flex items-center justify-between" style="border-top: 1px solid #1e293b; padding-top: 1rem; margin-top: 1.5rem;">
+                            <button id="prevBtn" class="btn btn-slate">
+                                ◄ Sebelumnya
+                            </button>
+
+                            <button id="nextBtn" class="btn btn-indigo">
+                                Selanjutnya ►
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: Rangkuman Rumus Kuadran -->
+    <div id="cheatSheetModal" class="modal-overlay hidden">
+        <div class="glass-panel modal-body">
+            <div class="flex items-center justify-between" style="border-bottom: 1px solid #334155; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 class="font-bold" style="color: white; font-size: 1.125rem;">📖 Rangkuman Sudut Berelasi</h3>
+                <button id="closeCheatSheet" class="btn btn-slate" style="padding: 0.25rem 0.5rem;">✕</button>
+            </div>
+
+            <div style="font-size: 0.8125rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 1rem;">
+                <div style="background: #020617; padding: 0.875rem; border-radius: 0.5rem;">
+                    <strong style="color: #818cf8; display: block; margin-bottom: 0.5rem;">1. Aturan Tanda Positif/Negatif (ASTC)</strong>
+                    <ul style="list-style: none; padding-left: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <li style="background: #1e293b; padding: 0.5rem; border-radius: 0.375rem;"><strong>Kuadran I (0°-90°):</strong> <span style="color:#34d399;">Semua (+)</span></li>
+                        <li style="background: #1e293b; padding: 0.5rem; border-radius: 0.375rem;"><strong>Kuadran II (90°-180°):</strong> <span style="color:#34d399;">Sin (+)</span></li>
+                        <li style="background: #1e293b; padding: 0.5rem; border-radius: 0.375rem;"><strong>Kuadran III (180°-270°):</strong> <span style="color:#34d399;">Tan (+)</span></li>
+                        <li style="background: #1e293b; padding: 0.5rem; border-radius: 0.375rem;"><strong>Kuadran IV (270°-360°):</strong> <span style="color:#34d399;">Cos (+)</span></li>
+                    </ul>
+                </div>
+
+                <div style="background: #020617; padding: 0.875rem; border-radius: 0.5rem;">
+                    <strong style="color: #818cf8; display: block; margin-bottom: 0.25rem;">2. Aturan Perubahan Nama Fungsi</strong>
+                    <p>• <strong>90° & 270°:</strong> Fungsi BERUBAH (sin ↔ cos, tan ↔ cot)</p>
+                    <p>• <strong>180° & 360° / (-α):</strong> Fungsi TETAP (sin tetap sin, cos tetap cos)</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; text-align: right;">
+                <button id="closeCheatSheetBottom" class="btn btn-indigo">Tutup & Paham</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Refleksi Diri Pembelajaran -->
+    <div id="reflectionModal" class="modal-overlay hidden">
+        <div class="glass-panel modal-body" style="border-color: rgba(168, 85, 247, 0.4);">
+            <div class="flex items-center justify-between" style="border-bottom: 1px solid #334155; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 class="font-bold" style="color: white; font-size: 1.125rem;">🧠 Refleksi Diri Pembelajaran</h3>
+                <button id="closeReflection" class="btn btn-slate" style="padding: 0.25rem 0.5rem;">✕</button>
+            </div>
+
+            <form id="reflectionForm" style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.8125rem;">
+                
+                <!-- 1. Emoji Mood Selector -->
+                <div>
+                    <label class="font-bold" style="color: #f1f5f9; display: block; margin-bottom: 0.375rem;">1. Bagaimana tingkat pemahamanmu terhadap materi Sudut Berelasi?</label>
+                    <div class="emoji-grid">
+                        <div class="emoji-card" data-feeling="Sangat Paham (🤩)">
+                            <div style="font-size: 1.75rem;">🤩</div>
+                            <div class="font-bold text-xs" style="color: white;">Sangat Paham</div>
+                        </div>
+                        <div class="emoji-card selected" data-feeling="Paham (🙂)">
+                            <div style="font-size: 1.75rem;">🙂</div>
+                            <div class="font-bold text-xs" style="color: white;">Paham</div>
+                        </div>
+                        <div class="emoji-card" data-feeling="Cukup (😐)">
+                            <div style="font-size: 1.75rem;">😐</div>
+                            <div class="font-bold text-xs" style="color: white;">Cukup</div>
+                        </div>
+                        <div class="emoji-card" data-feeling="Perlu Belajar (😟)">
+                            <div style="font-size: 1.75rem;">😟</div>
+                            <div class="font-bold text-xs" style="color: white;">Perlu Belajar</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Star Rating System -->
+                <div style="background: #020617; padding: 1rem; border-radius: 0.75rem; text-align: center; border: 1px solid #1e293b;">
+                    <label class="font-bold" style="color: #f1f5f9; display: block;">2. Penilaian Bintang Kepuasan Belajar Mandiri</label>
+                    <div id="starContainer" class="star-rating">
+                        <span class="star-item active" data-star="1">★</span>
+                        <span class="star-item active" data-star="2">★</span>
+                        <span class="star-item active" data-star="3">★</span>
+                        <span class="star-item active" data-star="4">★</span>
+                        <span class="star-item" data-star="5">★</span>
+                    </div>
+                    <span id="starLabel" class="text-xs text-amber font-bold">4 dari 5 Bintang (Bagus & Mantap!)</span>
+                </div>
+
+                <!-- 3. Topik Masteri -->
+                <div>
+                    <label class="font-bold" style="color: #f1f5f9; display: block; margin-bottom: 0.25rem;">3. Konsep mana yang paling kamu kuasai?</label>
+                    <select id="masteredTopic" style="width: 100%; background: #020617; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8125rem;">
+                        <option value="Aturan Tanda (+/-) Tiap Kuadran (ASTC)">Aturan Tanda (+/-) Tiap Kuadran (ASTC)</option>
+                        <option value="Perubahan Fungsi dengan 90° & 270°">Perubahan Fungsi dengan 90° & 270°</option>
+                        <option value="Fungsi Tetap dengan 180° & 360°">Fungsi Tetap dengan 180° & 360°</option>
+                        <option value="Sudut Negatif (-α)">Sudut Negatif (-α)</option>
+                        <option value="Nilai Eksak Sudut Istimewa">Nilai Eksak Sudut Istimewa</option>
+                    </select>
+                </div>
+
+                <!-- 4. Catatan Kesulitan -->
+                <div>
+                    <label class="font-bold" style="color: #f1f5f9; display: block; margin-bottom: 0.25rem;">4. Catatan / Kesulitan yang ditemui:</label>
+                    <textarea id="reflectionNotes" rows="3" placeholder="Tuliskan catatanmu di sini..." style="width: 100%; background: #020617; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8125rem; resize: none;"></textarea>
+                </div>
+
+                <!-- Status Toast -->
+                <div id="reflectionToast" class="hidden" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #a7f3d0; padding: 0.5rem; border-radius: 0.5rem; text-align: center; font-size: 0.75rem;">
+                    ✓ <span id="toastMsg">Refleksi berhasil disimpan!</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between" style="border-top: 1px solid #334155; padding-top: 0.75rem; margin-top: 0.5rem;">
+                    <button type="button" id="copyReflectionBtn" class="btn btn-slate">📋 Salin Hasil Refleksi</button>
+                    <button type="submit" class="btn btn-purple">💾 Simpan Refleksi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Completion Screen -->
+    <div id="completionModal" class="modal-overlay hidden">
+        <div class="glass-panel modal-body" style="text-align: center; max-width: 420px;">
+            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏆</div>
+            <h3 class="font-bold" style="color: white; font-size: 1.5rem;">Selamat! Selesai 36 Soal</h3>
+            <p class="text-xs text-muted" style="margin-bottom: 1.25rem;">Kamu telah menyelesaikan seluruh petualangan sudut berelasi.</p>
+
+            <div style="background: #020617; padding: 1rem; border-radius: 0.75rem; border: 1px solid #1e293b; margin-bottom: 1.25rem; font-size: 0.875rem;">
+                <div class="flex justify-between" style="margin-bottom: 0.25rem;">
+                    <span class="text-muted">Skor Akhir:</span>
+                    <strong id="finalScore" class="text-amber">0</strong>
+                </div>
+                <div class="flex justify-between" style="margin-bottom: 0.25rem;">
+                    <span class="text-muted">Jawaban Benar:</span>
+                    <strong id="finalCorrect" class="text-emerald">0 / 36</strong>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Akurasi:</span>
+                    <strong id="finalAccuracy" style="color: #818cf8;">0%</strong>
+                </div>
+            </div>
+
+            <button id="restartGameBtn" class="btn btn-indigo w-full" style="padding: 0.75rem;">🔄 Main Lagi / Ulangi</button>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio API Synthesizer (100% Offline Compatible)
+        class SoundEngine {
+            constructor() {
+                this.audioCtx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.audioCtx) {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            playCorrect() { // Happy Fanfare
+                if (this.muted) return;
+                this.init();
+                const now = this.audioCtx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, idx) => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+
+                    gain.gain.setValueAtTime(0.2, now + idx * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.35);
+
+                    osc.connect(gain);
+                    gain.connect(this.audioCtx.destination);
+
+                    osc.start(now + idx * 0.07);
+                    osc.stop(now + idx * 0.07 + 0.35);
+                });
+            }
+
+            playIncorrect() { // Synthesized Fart Sound
+                if (this.muted) return;
+                this.init();
+                const now = this.audioCtx.currentTime;
+
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                const mod = this.audioCtx.createOscillator();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(135, now);
+                osc.frequency.exponentialRampToValueAtTime(35, now + 0.45);
+
+                mod.type = 'sawtooth';
+                mod.frequency.setValueAtTime(35, now);
+                mod.frequency.linearRampToValueAtTime(12, now + 0.45);
+
+                mod.connect(osc.frequency);
+
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+
+                mod.start(now);
+                osc.start(now);
+                mod.stop(now + 0.45);
+                osc.stop(now + 0.45);
+            }
+
+            playClick() {
+                if (this.muted) return;
+                this.init();
+                const now = this.audioCtx.currentTime;
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(450, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.05);
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        // Complete 36 Questions Dataset
+        const questionsData = [
+            // Kuadran I (1-3)
+            { id: 1, category: "Kuadran I (Rumus)", type: "formula", question: "sin (90° - α) = ...", options: ["cos α", "-cos α", "sin α", "-sin α"], answerIndex: 0, hint: "Kuadran I: Semua POSITIF. Menggunakan 90° membuat fungsi BERUBAH.", explanation: "90° - α berada di Kuadran I (semua bernilai +). Menggunakan 90° mengubah sin menjadi cos. Hasil: **cos α**." },
+            { id: 2, category: "Kuadran I (Rumus)", type: "formula", question: "cos (90° - α) = ...", options: ["sin α", "-sin α", "cos α", "-cos α"], answerIndex: 0, hint: "Kuadran I: Positif. Menggunakan 90° mengubah cos jadi sin.", explanation: "Di Kuadran I nilai cos (+). Karena menggunakan 90°, cos berubah menjadi sin. Hasil: **sin α**." },
+            { id: 3, category: "Kuadran I (Rumus)", type: "formula", question: "tan (90° - α) = ...", options: ["cot α", "-cot α", "tan α", "-tan α"], answerIndex: 0, hint: "Kuadran I: Positif. Menggunakan 90° mengubah tan jadi cotan.", explanation: "Di Kuadran I tan bernilai (+). Memakai 90° mengubah tan menjadi cotan. Hasil: **cot α**." },
+
+            // Kuadran II (4-9)
+            { id: 4, category: "Kuadran II (Rumus)", type: "formula", question: "sin (90° + α) = ...", options: ["cos α", "-cos α", "sin α", "-sin α"], answerIndex: 0, hint: "Kuadran II: Sin POSITIF. Menggunakan 90° fungsi BERUBAH.", explanation: "90° + α berada di Kuadran II (Sin bernilai +). Menggunakan 90° mengubah sin menjadi cos. Hasil: **+cos α**." },
+            { id: 5, category: "Kuadran II (Rumus)", type: "formula", question: "cos (90° + α) = ...", options: ["-sin α", "sin α", "-cos α", "cos α"], answerIndex: 0, hint: "Kuadran II: Cos NEGATIF. Menggunakan 90° fungsi BERUBAH.", explanation: "Di Kuadran II cos bernilai (-). Menggunakan 90° mengubah cos menjadi sin. Hasil: **-sin α**." },
+            { id: 6, category: "Kuadran II (Rumus)", type: "formula", question: "tan (90° + α) = ...", options: ["-cot α", "cot α", "-tan α", "tan α"], answerIndex: 0, hint: "Kuadran II: Tan NEGATIF. Menggunakan 90° fungsi BERUBAH.", explanation: "Di Kuadran II tan bernilai (-). Memakai 90° mengubah tan menjadi cotan. Hasil: **-cot α**." },
+            { id: 7, category: "Kuadran II (Rumus)", type: "formula", question: "sin (180° - α) = ...", options: ["sin α", "-sin α", "cos α", "-cos α"], answerIndex: 0, hint: "Kuadran II: Sin POSITIF. Menggunakan 180° fungsi TETAP.", explanation: "180° - α di Kuadran II (Sin bernilai +). Memakai 180° fungsi tetap sin. Hasil: **sin α**." },
+            { id: 8, category: "Kuadran II (Rumus)", type: "formula", question: "cos (180° - α) = ...", options: ["-cos α", "cos α", "-sin α", "sin α"], answerIndex: 0, hint: "Kuadran II: Cos NEGATIF. Memakai 180° fungsi TETAP.", explanation: "Di Kuadran II cos bernilai (-). Memakai 180° fungsi tetap cos. Hasil: **-cos α**." },
+            { id: 9, category: "Kuadran II (Rumus)", type: "formula", question: "tan (180° - α) = ...", options: ["-tan α", "tan α", "-cot α", "cot α"], answerIndex: 0, hint: "Kuadran II: Tan NEGATIF. Memakai 180° fungsi TETAP.", explanation: "Di Kuadran II tan bernilai (-). Memakai 180° fungsi tetap tan. Hasil: **-tan α**." },
+
+            // Kuadran III (10-15)
+            { id: 10, category: "Kuadran III (Rumus)", type: "formula", question: "sin (180° + α) = ...", options: ["-sin α", "sin α", "-cos α", "cos α"], answerIndex: 0, hint: "Kuadran III: Sin NEGATIF (hanya Tan yang +). 180° fungsi TETAP.", explanation: "180° + α di Kuadran III (Sin bernilai -). Memakai 180° fungsi tetap sin. Jadi **sin(180° + α) = -sin α**." },
+            { id: 11, category: "Kuadran III (Rumus)", type: "formula", question: "cos (180° + α) = ...", options: ["-cos α", "cos α", "-sin α", "sin α"], answerIndex: 0, hint: "Kuadran III: Cos NEGATIF. 180° fungsi TETAP.", explanation: "Di Kuadran III cos bernilai (-). Memakai 180° fungsi tetap cos. Maka **cos(180° + α) = -cos α**." },
+            { id: 12, category: "Kuadran III (Rumus)", type: "formula", question: "tan (180° + α) = ...", options: ["tan α", "-tan α", "cot α", "-cot α"], answerIndex: 0, hint: "Kuadran III: Tan POSITIF. 180° fungsi TETAP.", explanation: "Di Kuadran III tan bernilai POSITIF (+). Memakai 180° fungsi tetap tan. Jadi **tan(180° + α) = tan α**." },
+            { id: 13, category: "Kuadran III (Rumus)", type: "formula", question: "sin (270° - α) = ...", options: ["-cos α", "cos α", "-sin α", "sin α"], answerIndex: 0, hint: "Kuadran III: Sin NEGATIF. Menggunakan 270° fungsi BERUBAH.", explanation: "270° - α di Kuadran III (Sin negatif). Menggunakan 270° mengubah sin jadi cos. Jadi **sin(270° - α) = -cos α**." },
+            { id: 14, category: "Kuadran III (Rumus)", type: "formula", question: "cos (270° - α) = ...", options: ["-sin α", "sin α", "-cos α", "cos α"], answerIndex: 0, hint: "Kuadran III: Cos NEGATIF. Menggunakan 270° fungsi BERUBAH.", explanation: "Di Kuadran III cos bernilai (-). Menggunakan 270° mengubah cos jadi sin. Maka **cos(270° - α) = -sin α**." },
+            { id: 15, category: "Kuadran III (Rumus)", type: "formula", question: "tan (270° - α) = ...", options: ["cot α", "-cot α", "tan α", "-tan α"], answerIndex: 0, hint: "Kuadran III: Tan POSITIF. Menggunakan 270° fungsi BERUBAH.", explanation: "Di Kuadran III tan bernilai POSITIF (+). Menggunakan 270° mengubah tan jadi cotan. Mereduksi menjadi **+cot α**." },
+
+            // Kuadran IV & Sudut Negatif (16-24)
+            { id: 16, category: "Kuadran IV (Rumus)", type: "formula", question: "sin (270° + α) = ...", options: ["-cos α", "cos α", "-sin α", "sin α"], answerIndex: 0, hint: "Kuadran IV: Sin NEGATIF. Menggunakan 270° fungsi BERUBAH.", explanation: "270° + α berada di Kuadran IV (Sin negatif). Menggunakan 270° fungsi sin berubah jadi cos. Hasil: **-cos α**." },
+            { id: 17, category: "Kuadran IV (Rumus)", type: "formula", question: "cos (270° + α) = ...", options: ["sin α", "-sin α", "cos α", "-cos α"], answerIndex: 0, hint: "Kuadran IV: Cos POSITIF. Menggunakan 270° fungsi BERUBAH.", explanation: "Di Kuadran IV cos bernilai POSITIF (+). Menggunakan 270° membuat cos berubah jadi sin. Hasil: **+sin α**." },
+            { id: 18, category: "Kuadran IV (Rumus)", type: "formula", question: "tan (270° + α) = ...", options: ["-cot α", "cot α", "-tan α", "tan α"], answerIndex: 0, hint: "Kuadran IV: Tan NEGATIF. Menggunakan 270° fungsi BERUBAH.", explanation: "Di Kuadran IV tan bernilai (-). Menggunakan 270° mengubah tan menjadi cot. Hasil: **-cot α**." },
+            { id: 19, category: "Kuadran IV (Rumus)", type: "formula", question: "sin (360° - α) = ...", options: ["-sin α", "sin α", "-cos α", "cos α"], answerIndex: 0, hint: "Kuadran IV: Sin NEGATIF. Menggunakan 360° fungsi TETAP.", explanation: "360° - α di Kuadran IV (Sin negatif). Memakai 360° fungsi tetap sin. Maka **sin(360° - α) = -sin α**." },
+            { id: 20, category: "Kuadran IV (Rumus)", type: "formula", question: "cos (360° - α) = ...", options: ["cos α", "-cos α", "sin α", "-sin α"], answerIndex: 0, hint: "Kuadran IV: Cos POSITIF. Menggunakan 360° fungsi TETAP.", explanation: "Di Kuadran IV cos bernilai POSITIF (+). Memakai 360° fungsi tetap cos. Hasil: **cos α**." },
+            { id: 21, category: "Kuadran IV (Rumus)", type: "formula", question: "tan (360° - α) = ...", options: ["-tan α", "tan α", "-cot α", "cot α"], answerIndex: 0, hint: "Kuadran IV: Tan NEGATIF. Menggunakan 360° fungsi TETAP.", explanation: "Di Kuadran IV tan bernilai (-). Memakai 360° fungsi tetap tan. Hasil: **-tan α**." },
+            { id: 22, category: "Sudut Negatif", type: "formula", question: "sin (-α) = ...", options: ["-sin α", "sin α", "-cos α", "cos α"], answerIndex: 0, hint: "Sudut (-α) berada di Kuadran IV. Sin di Kuadran IV bernilai negatif.", explanation: "Sudut negatif (-α) berada di Kuadran IV. Nilai sin adalah negatif, maka **sin(-α) = -sin α**." },
+            { id: 23, category: "Sudut Negatif", type: "formula", question: "cos (-α) = ...", options: ["cos α", "-cos α", "sin α", "-sin α"], answerIndex: 0, hint: "Sudut (-α) di Kuadran IV. Cos di Kuadran IV bernilai POSITIF.", explanation: "Di Kuadran IV cos bernilai POSITIF (+). Oleh karena itu, **cos(-α) = cos α**." },
+            { id: 24, category: "Sudut Negatif", type: "formula", question: "tan (-α) = ...", options: ["-tan α", "tan α", "-cot α", "cot α"], answerIndex: 0, hint: "Sudut (-α) di Kuadran IV. Tan bernilai NEGATIF.", explanation: "Di Kuadran IV tan bernilai NEGATIF (-). Maka **tan(-α) = -tan α**." },
+
+            // Nilai Eksak (25-33)
+            { id: 25, category: "Nilai Eksak (K.II)", type: "value", question: "Nilai dari sin 120° = ...", options: ["½√3", "-½√3", "½", "-½"], answerIndex: 0, hint: "120° = 180° - 60° (Kuadran II, Sin Positif).", explanation: "120° di Kuadran II (Sin +). sin 120° = sin(180° - 60°) = +sin 60° = **½√3**." },
+            { id: 26, category: "Nilai Eksak (K.II)", type: "value", question: "Nilai dari cos 135° = ...", options: ["-½√2", "½√2", "-½√3", "½√3"], answerIndex: 0, hint: "135° = 180° - 45° (Kuadran II, Cos Negatif).", explanation: "135° di Kuadran II (Cos -). cos 135° = -cos 45° = **-½√2**." },
+            { id: 27, category: "Nilai Eksak (K.II)", type: "value", question: "Nilai dari tan 150° = ...", options: ["-⅓√3", "⅓√3", "-√3", "√3"], answerIndex: 0, hint: "150° = 180° - 30° (Kuadran II, Tan Negatif).", explanation: "150° di Kuadran II (Tan -). tan 150° = -tan 30° = **-⅓√3**." },
+            { id: 28, category: "Nilai Eksak (K.III)", type: "value", question: "Nilai dari sin 210° = ...", options: ["-½", "½", "-½√3", "½√3"], answerIndex: 0, hint: "210° = 180° + 30° (Kuadran III, Sin Negatif).", explanation: "210° di Kuadran III (Sin -). sin 210° = -sin 30° = **-½**." },
+            { id: 29, category: "Nilai Eksak (K.III)", type: "value", question: "Nilai dari cos 225° = ...", options: ["-½√2", "½√2", "-½", "½"], answerIndex: 0, hint: "225° = 180° + 45° (Kuadran III, Cos Negatif).", explanation: "225° di Kuadran III (Cos -). cos 225° = -cos 45° = **-½√2**." },
+            { id: 30, category: "Nilai Eksak (K.III)", type: "value", question: "Nilai dari tan 240° = ...", options: ["√3", "-√3", "⅓√3", "-⅓√3"], answerIndex: 0, hint: "240° = 180° + 60° (Kuadran III, Tan POSITIF).", explanation: "240° di Kuadran III (Tan POSITIF +). tan 240° = +tan 60° = **√3**." },
+            { id: 31, category: "Nilai Eksak (K.IV)", type: "value", question: "Nilai dari sin 300° = ...", options: ["-½√3", "½√3", "-½", "½"], answerIndex: 0, hint: "300° = 360° - 60° (Kuadran IV, Sin Negatif).", explanation: "300° di Kuadran IV (Sin -). sin 300° = -sin 60° = **-½√3**." },
+            { id: 32, category: "Nilai Eksak (K.IV)", type: "value", question: "Nilai dari cos 315° = ...", options: ["½√2", "-½√2", "½√3", "-½√3"], answerIndex: 0, hint: "315° = 360° - 45° (Kuadran IV, Cos POSITIF).", explanation: "315° di Kuadran IV (Cos POSITIF +). cos 315° = +cos 45° = **½√2**." },
+            { id: 33, category: "Nilai Eksak (K.IV)", type: "value", question: "Nilai dari tan 330° = ...", options: ["-⅓√3", "⅓√3", "-√3", "√3"], answerIndex: 0, hint: "330° = 360° - 30° (Kuadran IV, Tan Negatif).", explanation: "330° di Kuadran IV (Tan -). tan 330° = -tan 30° = **-⅓√3**." },
+
+            // Resiprokal & Pengayaan (34-36)
+            { id: 34, category: "Pengayaan (Resiprokal)", type: "formula", question: "cosec (90° + α) = ...", options: ["sec α", "-sec α", "cosec α", "-cosec α"], answerIndex: 0, hint: "Cosec = 1/sin. Kuadran II cosec POSITIF.", explanation: "90° + α di Kuadran II (Cosec +). 90° membuat cosec berubah jadi sec. Hasil: **sec α**." },
+            { id: 35, category: "Pengayaan (Resiprokal)", type: "formula", question: "sec (180° - α) = ...", options: ["-sec α", "sec α", "-cosec α", "cosec α"], answerIndex: 0, hint: "Sec = 1/cos. Kuadran II sec NEGATIF.", explanation: "180° - α di Kuadran II (Sec -). Memakai 180° fungsi tetap sec. Hasil: **-sec α**." },
+            { id: 36, category: "Pengayaan (Resiprokal)", type: "formula", question: "cot (270° + α) = ...", options: ["-tan α", "tan α", "-cot α", "cot α"], answerIndex: 0, hint: "Cot = 1/tan. Kuadran IV cot NEGATIF.", explanation: "270° + α di Kuadran IV (Cot -). Memakai 270° cot berubah jadi tan. Hasil: **-tan α**." }
+        ];
+
+        // State Variables
+        let currentIndex = 0;
+        let userAnswers = new Array(36).fill(null);
+        let currentFilter = 'all';
+        let selectedFeeling = 'Paham (🙂)';
+        let selectedStars = 4;
+
+        // DOM Elements
+        const questionGrid = document.getElementById('questionGrid');
+        const currentQuestionNum = document.getElementById('currentQuestionNum');
+        const currentCategory = document.getElementById('currentCategory');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const explanationPanel = document.getElementById('explanationPanel');
+        const explanationText = document.getElementById('explanationText');
+        const scoreText = document.getElementById('scoreText');
+        const progressText = document.getElementById('progressText');
+        const accuracyText = document.getElementById('accuracyText');
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const hintBtn = document.getElementById('hintBtn');
+
+        // Modals
+        const cheatSheetModal = document.getElementById('cheatSheetModal');
+        const reflectionModal = document.getElementById('reflectionModal');
+        const completionModal = document.getElementById('completionModal');
+
+        // Render Question Selector Grid (1 to 36)
+        function renderGrid() {
+            questionGrid.innerHTML = '';
+            questionsData.forEach((q, idx) => {
+                const answerState = userAnswers[idx];
+
+                if (currentFilter === 'formula' && q.type !== 'formula') return;
+                if (currentFilter === 'value' && q.type !== 'value') return;
+                if (currentFilter === 'unanswered' && answerState !== null) return;
+
+                const btn = document.createElement('button');
+                btn.className = `grid-num-btn ${idx === currentIndex ? 'active' : ''}`;
+                
+                if (answerState !== null) {
+                    btn.classList.add(answerState.isCorrect ? 'correct' : 'incorrect');
+                }
+
+                btn.textContent = `${idx + 1}`;
+                btn.onclick = () => {
+                    sound.playClick();
+                    currentIndex = idx;
+                    renderQuestion();
+                    renderGrid();
+                };
+
+                questionGrid.appendChild(btn);
+            });
+        }
+
+        // Render Active Question
+        function renderQuestion() {
+            const q = questionsData[currentIndex];
+            const answerState = userAnswers[currentIndex];
+
+            currentQuestionNum.textContent = `Soal #${currentIndex + 1}`;
+            currentCategory.textContent = q.category;
+            questionText.textContent = q.question;
+
+            optionsContainer.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, optIdx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = 'option-btn';
+
+                if (answerState) {
+                    const isChosen = answerState.chosenIndex === optIdx;
+                    const isCorrectOpt = q.answerIndex === optIdx;
+
+                    if (isCorrectOpt) optBtn.classList.add('opt-correct');
+                    else if (isChosen) optBtn.classList.add('opt-wrong');
+                    
+                    optBtn.disabled = true;
+                }
+
+                optBtn.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <span class="option-badge">${letters[optIdx]}</span>
+                        <span>${optText}</span>
+                    </div>
+                    ${answerState && optIdx === q.answerIndex ? '<span>✓</span>' : ''}
+                    ${answerState && answerState.chosenIndex === optIdx && !answerState.isCorrect ? '<span>✕</span>' : ''}
+                `;
+
+                optBtn.onclick = () => handleAnswer(optIdx);
+                optionsContainer.appendChild(optBtn);
+            });
+
+            if (answerState) {
+                explanationText.innerHTML = q.explanation;
+                explanationPanel.classList.remove('hidden');
+            } else {
+                explanationPanel.classList.add('hidden');
+            }
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === questionsData.length - 1;
+        }
+
+        // Handle User Answer
+        function handleAnswer(chosenIndex) {
+            const q = questionsData[currentIndex];
+            const isCorrect = chosenIndex === q.answerIndex;
+
+            userAnswers[currentIndex] = { chosenIndex, isCorrect };
+
+            if (isCorrect) sound.playCorrect();
+            else sound.playIncorrect();
+
+            updateStats();
+            renderQuestion();
+            renderGrid();
+
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            if (answeredCount === 36) setTimeout(showCompletionModal, 1000);
+        }
+
+        // Update Statistics Bar
+        function updateStats() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const correctCount = userAnswers.filter(a => a && a.isCorrect).length;
+            const score = correctCount * 10;
+            const accuracy = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+
+            scoreText.textContent = score;
+            progressText.textContent = `${answeredCount} / 36`;
+            accuracyText.textContent = `${accuracy}%`;
+            progressBar.style.width = `${(answeredCount / 36) * 100}%`;
+        }
+
+        // Reflection Star Rating Logic
+        function updateStarDisplay(rating) {
+            selectedStars = rating;
+            const labels = [
+                "1 Bintang (Sangat Kesulitan)",
+                "2 Bintang (Perlu Banyak Latihan)",
+                "3 Bintang (Cukup Paham)",
+                "4 Bintang (Bagus & Mantap!)",
+                "5 Bintang (Luar Biasa & Sangat Menguasai!)"
+            ];
+            document.getElementById('starLabel').textContent = `${rating} dari 5 Bintang (${labels[rating - 1]})`;
+
+            document.querySelectorAll('#starContainer .star-item').forEach(star => {
+                const val = parseInt(star.getAttribute('data-star'));
+                if (val <= rating) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+        }
+
+        document.querySelectorAll('#starContainer .star-item').forEach(star => {
+            star.onclick = (e) => {
+                sound.playClick();
+                updateStarDisplay(parseInt(e.target.getAttribute('data-star')));
+            };
+        });
+
+        // Emoji Selector Logic
+        document.querySelectorAll('.emoji-card').forEach(card => {
+            card.onclick = (e) => {
+                sound.playClick();
+                document.querySelectorAll('.emoji-card').forEach(c => c.classList.remove('selected'));
+                const target = e.currentTarget;
+                target.classList.add('selected');
+                selectedFeeling = target.getAttribute('data-feeling');
+            };
+        });
+
+        // Event Listeners for Controls & Modals
+        document.getElementById('cheatSheetBtn').onclick = () => { sound.playClick(); cheatSheetModal.classList.remove('hidden'); };
+        document.getElementById('closeCheatSheet').onclick = () => cheatSheetModal.classList.add('hidden');
+        document.getElementById('closeCheatSheetBottom').onclick = () => cheatSheetModal.classList.add('hidden');
+
+        document.getElementById('reflectionBtn').onclick = () => { sound.playClick(); reflectionModal.classList.remove('hidden'); };
+        document.getElementById('closeReflection').onclick = () => reflectionModal.classList.add('hidden');
+
+        document.getElementById('soundBtn').onclick = () => {
+            sound.muted = !sound.muted;
+            document.getElementById('soundStatusText').textContent = sound.muted ? '🔇' : '🔊';
+            if (!sound.muted) sound.playClick();
+        };
+
+        document.getElementById('resetBtn').onclick = () => {
+            sound.playClick();
+            userAnswers = new Array(36).fill(null);
+            currentIndex = 0;
+            updateStats();
+            renderQuestion();
+            renderGrid();
+        };
+
+        hintBtn.onclick = () => {
+            sound.playClick();
+            const q = questionsData[currentIndex];
+            explanationText.innerHTML = `💡 <strong>Petunjuk:</strong> ${q.hint}`;
+            explanationPanel.classList.remove('hidden');
+        };
+
+        prevBtn.onclick = () => { if (currentIndex > 0) { sound.playClick(); currentIndex--; renderQuestion(); renderGrid(); } };
+        nextBtn.onclick = () => { if (currentIndex < 35) { sound.playClick(); currentIndex++; renderQuestion(); renderGrid(); } };
+
+        // Save Reflection
+        document.getElementById('reflectionForm').onsubmit = (e) => {
+            e.preventDefault();
+            sound.playClick();
+            const reflectionData = {
+                feeling: selectedFeeling,
+                stars: selectedStars,
+                masteredTopic: document.getElementById('masteredTopic').value,
+                notes: document.getElementById('reflectionNotes').value,
+                date: new Date().toLocaleDateString('id-ID')
+            };
+            localStorage.setItem('trigo_reflection_offline', JSON.stringify(reflectionData));
+            
+            const toast = document.getElementById('reflectionToast');
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        };
+
+        // Copy Reflection Text
+        document.getElementById('copyReflectionBtn').onclick = () => {
+            sound.playClick();
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const correctCount = userAnswers.filter(a => a && a.isCorrect).length;
+
+            const textToCopy = `[HASIL REFLEKSI BELAJAR TRIGONOMETRI]\n` +
+                `Perasaan & Pemahaman: ${selectedFeeling}\n` +
+                `Rating Kepuasan: ${selectedStars}/5 Bintang\n` +
+                `Topik Dikuasai: ${document.getElementById('masteredTopic').value}\n` +
+                `Progres Latihan Soal: ${correctCount} Benar dari ${answeredCount} dijawab\n` +
+                `Catatan Kesulitan: ${document.getElementById('reflectionNotes').value || 'Tidak ada'}`;
+
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            const toast = document.getElementById('reflectionToast');
+            document.getElementById('toastMsg').textContent = "Hasil refleksi telah disalin!";
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        };
+
+        // Filter Buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                sound.playClick();
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.getAttribute('data-filter');
+                renderGrid();
+            };
+        });
+
+        // Show Completion Modal
+        function showCompletionModal() {
+            const correctCount = userAnswers.filter(a => a && a.isCorrect).length;
+            const accuracy = Math.round((correctCount / 36) * 100);
+
+            document.getElementById('finalScore').textContent = correctCount * 10;
+            document.getElementById('finalCorrect').textContent = `${correctCount} / 36`;
+            document.getElementById('finalAccuracy').textContent = `${accuracy}%`;
+
+            completionModal.classList.remove('hidden');
+        }
+
+        document.getElementById('restartGameBtn').onclick = () => {
+            completionModal.classList.add('hidden');
+            userAnswers = new Array(36).fill(null);
+            currentIndex = 0;
+            updateStats();
+            renderQuestion();
+            renderGrid();
+            sound.playClick();
+        };
+
+        // Initialize on load
+        window.onload = () => {
+            renderGrid();
+            renderQuestion();
+            updateStats();
+        };
+    </script>
+</body>
+</html>
